@@ -1,14 +1,12 @@
---- nginx.spec.original	2017-07-11 14:25:51.000000000 +0000
-+++ nginx.spec	2017-08-01 10:15:51.944138339 +0000
-@@ -50,10 +50,15 @@
+--- nginx.spec.original	2017-09-28 11:31:08.878669960 +0900
++++ nginx.spec	2017-09-28 12:14:32.613301058 +0900
+@@ -51,10 +51,13 @@
  %define main_version 1.13.5
  %define main_release 1%{?dist}.ngx
  
-+%define ngx_mruby_ver @@NGX_MRUBY_VER@@
 +%define siteguard_ver @@SITEGUARD_VER@@
 +
  %define bdir %{_builddir}/%{name}-%{main_version}
-+%define ngx_mruby_dir %{_builddir}/ngx_mruby-%{ngx_mruby_ver}
 +%define siteguard_dir %{_builddir}/siteguardlite-%{siteguard_ver}.nginx.x86_64
  
 -%define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags)) -fPIC
@@ -18,40 +16,30 @@
  
  %define BASE_CONFIGURE_ARGS $(echo "--prefix=%{_sysconfdir}/nginx --sbin-path=%{_sbindir}/nginx --modules-path=%{_libdir}/nginx/modules --conf-path=%{_sysconfdir}/nginx/nginx.conf --error-log-path=%{_localstatedir}/log/nginx/error.log --http-log-path=%{_localstatedir}/log/nginx/access.log --pid-path=%{_localstatedir}/run/nginx.pid --lock-path=%{_localstatedir}/run/nginx.lock --http-client-body-temp-path=%{_localstatedir}/cache/nginx/client_temp --http-proxy-temp-path=%{_localstatedir}/cache/nginx/proxy_temp --http-fastcgi-temp-path=%{_localstatedir}/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=%{_localstatedir}/cache/nginx/uwsgi_temp --http-scgi-temp-path=%{_localstatedir}/cache/nginx/scgi_temp --user=%{nginx_user} --group=%{nginx_group} --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module")
  
-@@ -78,6 +83,8 @@
+@@ -79,6 +82,7 @@
  Source11: nginx-debug.service
  Source12: COPYRIGHT
  Source13: nginx.check-reload.sh
-+Source98: ngx_mruby-%{ngx_mruby_ver}.tar.gz
 +Source99: siteguardlite-%{siteguard_ver}.nginx.x86_64.tar.gz
  
  License: 2-clause BSD-like license
  
-@@ -103,8 +110,19 @@
+@@ -104,8 +108,11 @@
  sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
      -e 's|%%PROVIDES%%|nginx-debug|g' < %{SOURCE2} > nginx-debug.init
  
-+tar xzf %{SOURCE98} -C ../
 +tar xzf %{SOURCE99} -C ../
 +
  %build
-+pushd %{ngx_mruby_dir}
-+./configure --with-ngx-src-root=%{bdir}
-+make build_mruby
-+make generate_gems_config
-+popd
-+
  ./configure %{BASE_CONFIGURE_ARGS} \
-+    --add-module=%{ngx_mruby_dir} --add-module=%{ngx_mruby_dir}/dependence/ngx_devel_kit --with-stream --without-stream_access_module \
 +    --add-module=%{siteguard_dir}/nginx \
      --with-cc-opt="%{WITH_CC_OPT}" \
      --with-ld-opt="%{WITH_LD_OPT}" \
      --with-debug
-@@ -112,6 +130,8 @@
+@@ -113,6 +120,7 @@
  %{__mv} %{bdir}/objs/nginx \
      %{bdir}/objs/nginx-debug
  ./configure %{BASE_CONFIGURE_ARGS} \
-+    --add-module=%{ngx_mruby_dir} --add-module=%{ngx_mruby_dir}/dependence/ngx_devel_kit --with-stream --without-stream_access_module \
 +    --add-module=%{siteguard_dir}/nginx \
      --with-cc-opt="%{WITH_CC_OPT}" \
      --with-ld-opt="%{WITH_LD_OPT}"

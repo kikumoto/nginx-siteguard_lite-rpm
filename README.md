@@ -1,5 +1,5 @@
 このリポジトリは、
-  Nginx + SiteGuard Lite + ngx_mruby
+  Nginx + SiteGuard Lite
 をCentOS7向けにビルドし、rpmを作成するためのものです。
 
 # 前提
@@ -11,7 +11,7 @@
 # ライセンスに関しての注意
 
 このリポジトリに直接置かれているファイル類については、リポジトリ内に記載しているLICENSEに従います。
-一方で、Nginx、SiteGuard Lite, ngx_mrubyについては、それぞれにライセンスが存在するのでそれに従ってください。
+一方で、Nginx、SiteGuard Lite については、それぞれにライセンスが存在するのでそれに従ってください。
 
 # ビルド方法
 
@@ -20,7 +20,6 @@
 Makefileの先頭に
 ```
 NGINX_SRC_RPM := nginx-1.13.5-1.el7.ngx.src.rpm
-NGX_MRUBY_VER := 1.20.1
 SITEGUARD_URL := ＜さくらインターネットより提供されているSiteGuard LiteのダウンロードURLを記載します。＞
 SITEGUARD_VER := 3.20-0
 ```
